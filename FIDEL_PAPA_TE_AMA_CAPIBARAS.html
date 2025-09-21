@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FIDEL PAPA TE AMA</title>
+  <style>
+    body {
+      background: #ffe4e1;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      font-family: 'Arial Black', Arial, sans-serif;
+      position: relative;
+    }
+    .titulo {
+      text-align: center;
+      font-size: 4em;
+      letter-spacing: 0.05em;
+      color: #d72660;
+      margin-top: 30px;
+      margin-bottom: 50px;
+      text-shadow: 3px 3px 0 #fff, 6px 6px 0 #d72660a0;
+      font-weight: bold;
+    }
+    .capibara {
+      position: absolute;
+      width: 160px;
+      height: 120px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+      z-index: 10;
+    }
+    .capibara:active {
+      transform: scale(1.08) rotate(-3deg);
+    }
+    .corazon {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      pointer-events: none;
+      animation: flotar 1.2s linear forwards;
+      z-index: 100;
+    }
+    @keyframes flotar {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+      80% {
+        opacity: 1;
+        transform: scale(1.5) translateY(-60px);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2) translateY(-120px) rotate(15deg);
+      }
+    }
+    /* Responsive for WhatsApp preview */
+    @media (max-width: 800px) {
+      .titulo { font-size: 2.2em; }
+      .capibara { width: 95px; height: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="titulo">FIDEL PAPA TE AMA</div>
+  <script>
+    // SVG Capibara (Cute!)
+    const capibaraSVG = `
+      <svg viewBox="0 0 160 120" width="160" height="120" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="80" cy="75" rx="65" ry="40" fill="#c1a074" stroke="#a98851" stroke-width="4"/>
+        <ellipse cx="50" cy="90" rx="12" ry="8" fill="#a98851"/>
+        <ellipse cx="110" cy="90" rx="12" ry="8" fill="#a98851"/>
+        <ellipse cx="43" cy="45" rx="18" ry="22" fill="#c1a074" stroke="#a98851" stroke-width="4"/>
+        <ellipse cx="120" cy="40" rx="10" ry="14" fill="#c1a074" stroke="#a98851" stroke-width="4"/>
+        <ellipse cx="40" cy="38" rx="4" ry="4.5" fill="#333"/>
+        <ellipse cx="130" cy="40" rx="2.8" ry="3.5" fill="#333"/>
+        <ellipse cx="54" cy="56" rx="4" ry="2" fill="#fff"/>
+        <ellipse cx="126" cy="51" rx="3" ry="1.5" fill="#fff"/>
+        <path d="M75 60 Q80 66 85 60" stroke="#333" stroke-width="3" fill="none"/>
+        <ellipse cx="60" cy="27" rx="2.3" ry="3.5" fill="#a98851"/>
+        <ellipse cx="138" cy="30" rx="2" ry="3" fill="#a98851"/>
+      </svg>
+    `;
+
+    // SVG Corazón
+    const corazonSVG = `
+      <svg viewBox="0 0 50 50" width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+        <path d="M25 44 Q11 30 12 20 Q13 10 25 15 Q37 10 38 20 Q39 30 25 44Z"
+          fill="#f12e70" stroke="#c41747" stroke-width="2"/>
+      </svg>
+    `;
+
+    // Función para crear muchos capibaras random por la pantalla
+    function crearCapibaras(num) {
+      const ancho = window.innerWidth;
+      const alto = window.innerHeight;
+      for(let i=0; i<num; i++) {
+        const cap = document.createElement('div');
+        cap.className = 'capibara';
+        cap.innerHTML = capibaraSVG;
+
+        // Posición aleatoria
+        cap.style.left = Math.random() * (ancho - 180) + 'px';
+        cap.style.top = (Math.random() * (alto - 160) + 100) + 'px';
+        cap.style.transform = `rotate(${Math.random()*14-7}deg)`;
+        // Click: explotar y mostrar corazones
+        cap.addEventListener('click', function(e) {
+          explotarCapibara(cap);
+          for (let j = 0; j < 7; j++) {
+            setTimeout(() => crearCorazon(e.pageX, e.pageY), j*80);
+          }
+        });
+        document.body.appendChild(cap);
+      }
+    }
+
+    // Explota la capibara (animación y desaparición)
+    function explotarCapibara(cap) {
+      cap.style.transition = "transform 0.3s, opacity 0.3s";
+      cap.style.transform += " scale(1.4) rotate(25deg)";
+      cap.style.opacity = 0;
+      setTimeout(() => cap.remove(), 350);
+    }
+
+    // Crear corazón animado en (x, y)
+    function crearCorazon(x, y) {
+      const cor = document.createElement('div');
+      cor.className = 'corazon';
+      cor.innerHTML = corazonSVG;
+      cor.style.left = (x - 25) + 'px';
+      cor.style.top = (y - 25) + 'px';
+      cor.style.pointerEvents = "none";
+      // Animación random (dirección)
+      cor.style.transform = `rotate(${Math.random()*40-20}deg)`;
+      document.body.appendChild(cor);
+      setTimeout(() => cor.remove(), 1200);
+    }
+
+    // Inicializar
+    function iniciar() {
+      const cantidad = Math.max(8, Math.floor(window.innerWidth / 170));
+      crearCapibaras(cantidad);
+    }
+    iniciar();
+
+    // Si se redimensiona la pantalla, añadir más capibaras para cubrir los huecos
+    window.addEventListener('resize', () => {
+      setTimeout(() => {
+        const actuales = document.querySelectorAll('.capibara').length;
+        const cantidad = Math.max(8, Math.floor(window.innerWidth / 170));
+        if (actuales < cantidad) crearCapibaras(cantidad - actuales);
+      }, 300);
+    });
+  </script>
+</body>
+</html>
